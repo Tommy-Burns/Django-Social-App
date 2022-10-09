@@ -1,0 +1,13 @@
+{% extends "base.xhtml" %}
+
+{% block title %}PicBooks Loign{% endblock %}
+
+{% block content %}
+  <h1>Login to PicBook</h1>
+  <p>Enter your details to login</p>
+  <form method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Login"></p>
+  </form>
+{% endblock %}
