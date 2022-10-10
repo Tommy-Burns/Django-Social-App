@@ -1,7 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ImageCreateForm
+from .models import Image
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
 
 
 # Create your views here.
@@ -24,4 +29,33 @@ def image_create(request):
     return render(request, 'images/image/create.xhtml', {
         'section': 'images',
         'form': form,
+    })
+
+
+def image_detail(request, id, slug):
+    image = get_object_or_404(Image, id=id, slug=slug)
+    return render(request, 'images/image/detail.xhtml', {
+        'section': 'images',
+        'image': image,
+    })
+
+
+def image_like(request):
+    image_id = request.POST.get('id')
+    action = request.POST.get('action')
+    
+    if image_id and action:
+        try:
+            image = Image.objects.get(id=image_id)
+            if action == 'like':
+                image.users_like.add(request.user)
+            else:
+                image.users_like.remove(request.user)
+            return JsonResponse({
+                'status': 'ok',
+            })
+        except Image.DoesNotExist:
+            pass
+    return JsonResponse({
+        'status': 'error',
     })
